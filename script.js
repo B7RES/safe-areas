@@ -5,19 +5,79 @@ document.addEventListener('DOMContentLoaded', () => {
     const addSafeAreaBtn = document.getElementById('addSafeArea');
     const deleteSafeAreaBtn = document.getElementById('deleteSafeArea');
 
+    let safeAreasDb = [];
+
+    function convertToPercentages(area) {
+        return {
+            left: ((area.x / canvas.width) * 100).toFixed(4),
+            top: ((area.y / canvas.height) * 100).toFixed(4),
+            right: (((area.x + area.width) / canvas.width) * 100).toFixed(4),
+            bottom: (((area.y + area.height) / canvas.height) * 100).toFixed(4)
+        };
+    }
+
     let image = null;
     let safeAreas = [];
     let selectedAreaIndex = -1;
 
     const handleSize = 8;
 
-    
+
     function updateButtonStates() {
         addSafeAreaBtn.disabled = !image;
         deleteSafeAreaBtn.disabled = selectedAreaIndex < 0;
     }
 
-    
+    document.getElementById('savePercentages').addEventListener('click', () => {
+        if (!image || safeAreas.length === 0) {
+            alert('No safe areas to save!');
+            return;
+        }
+
+        safeAreasDb = safeAreas.map(area => convertToPercentages(area));
+
+        console.log('Safe Areas in Percentages:', JSON.stringify(safeAreasDb, null, 2));
+    });
+
+
+    document.getElementById('loadPredefined').addEventListener('click', () => {
+        if (!image) return;
+
+        const predefinedAreas = [
+            {
+                "left": "0.0000",
+                "top": "0.0000",
+                "right": "77.6276",
+                "bottom": "76.4250"
+            }
+        ];
+
+        drawSafeAreasFromPercentages(predefinedAreas);
+    });
+
+    function drawSafeAreasFromPercentages(percentageAreas) {
+        safeAreas = percentageAreas.map(area => {
+            const x = (parseFloat(area.left) * canvas.width) / 100;
+            const y = (parseFloat(area.top) * canvas.height) / 100;
+            const width = ((parseFloat(area.right) - parseFloat(area.left)) * canvas.width) / 100;
+            const height = ((parseFloat(area.bottom) - parseFloat(area.top)) * canvas.height) / 100;
+
+            return {
+                x,
+                y,
+                width,
+                height,
+                dragging: false,
+                resizing: false,
+                resizeHandle: null
+            };
+        });
+
+        selectedAreaIndex = -1;
+        updateButtonStates();
+        drawCanvas();
+    }
+
     imageUpload.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
