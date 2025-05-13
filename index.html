@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Safe Area Editor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Image Safe Area Editor</h1>
+
+        <div class="controls">
+            <input type="file" id="imageUpload" accept="image/*">
+            <button id="addSafeArea" disabled>Add Safe Area</button>
+            <button id="deleteSafeArea" disabled style="background-color: #d93025;">Delete Safe Area</button>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="canvas"></canvas>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
